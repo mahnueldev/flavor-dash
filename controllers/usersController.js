@@ -1,7 +1,10 @@
 const bcrypt = require('bcryptjs');
+const { v4: uuidv4 } = require('uuid');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const { validationResult } = require('express-validator');
+const { sendApiKeyEmail } = require('../utils/sendApiKeyUtils');
+const crypto = require('crypto');
 
 const User = require('../models/User');
 
@@ -11,7 +14,7 @@ const createUser = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { name, email, password } = req.body;
+  const { firstName, lastName, email, password } = req.body;
 
   try {
     let user = await User.findOne({ email });
@@ -20,33 +23,41 @@ const createUser = async (req, res) => {
       return res.status(400).json({ msg: 'User already exists' });
     }
 
+    const uuid = uuidv4().substring(0, 15);
+    const hash = crypto.createHash('sha512').update(uuid).digest('base64').substring(0, 15);
+    const randIndex = Math.floor(Math.random() * hash.length);
+    const apiKey =
+      hash.substring(0, randIndex) +
+      hash.charAt(randIndex).toUpperCase() +
+      hash.substring(randIndex + 1) +
+      '_' +
+      uuid.substring(uuid.length - 5).toUpperCase();
+
     user = new User({
-      name,
+      firstName,
+      lastName,
       email,
       password,
-      roles: 'editor' // Set default role to editor
+      roles: 'editor',
+      apikey: await bcrypt.hash(apiKey, 10)
     });
-
     const salt = await bcrypt.genSalt(10);
 
     user.password = await bcrypt.hash(password, salt);
-
-    const apiKey = await bcrypt.hash(email + Date.now(), salt); // Generate API key from email + current timestamp
-    user.apikey = apiKey;
-
     await user.save();
+    await sendApiKeyEmail(firstName, email, apiKey);
 
     const payload = {
       user: {
-        id: user.id
-      }
+        id: user.id,
+      },
     };
 
     jwt.sign(
       payload,
       config.get('jwtSecret'),
       {
-        expiresIn: 360000
+        expiresIn: 360000,
       },
       (err, token) => {
         if (err) throw err;

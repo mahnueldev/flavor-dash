@@ -1,14 +1,6 @@
 const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-
-// Load environment variables based on current environment
-if (process.env.NODE_ENV === "development") {
-  dotenv.config({ path: ".env.development.local" });
-} else {
-  dotenv.config({ path: ".env.production.local" });
-}
-
-const db = process.env.DB_MONGOURI;
+const config = require('config');
+const db = config.get('mongoURI');
 
 const connectDB = async () => {
   try {
@@ -16,11 +8,8 @@ const connectDB = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log('MongoDB connected');
   } catch (err) {
-    console.error(err.message);
-    // Exit process with failure
-    process.exit(1);
+    console.error(err);
   }
 };
 

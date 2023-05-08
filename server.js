@@ -1,6 +1,7 @@
 const path = require('path');
 const connectDB = require('./config/db');
 const express = require('express');
+
 const app = express();
 const cors = require('cors');
 const corsOptions = require('./config/corsOptions');
@@ -19,6 +20,7 @@ connectDB();
 // Cross Origin Resource Sharing
 app.use(cors(corsOptions));
 
+
 // Use HTTP request logger
 app.use(accessLogMiddleware);
 app.use(errorLogMiddleware);
@@ -28,9 +30,12 @@ app.use(errorLogMiddleware);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
+
 // Routes
 app.use('/api/users', require('./routes/users'));
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/reset', require('./routes/reset'));
 
 
 //server

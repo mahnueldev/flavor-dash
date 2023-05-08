@@ -1,21 +1,23 @@
 const express = require('express');
 const router = express.Router();
 const { check } = require('express-validator');
-
-const authController = require('../controllers/authController');
+const {
+  getLoggedInUser,
+  authenticateUser,
+} = require('../controllers/authController');
 const authMiddleware = require('../middleware/authMiddleware');
 
 // Get logged in user
-router.get('/', authMiddleware, authController.getLoggedInUser);
+router.get('/', authMiddleware, getLoggedInUser);
 
 // Authenticate user & get token
 router.post(
   '/',
   [
     check('email', 'Please include a valid email').isEmail(),
-    check('password', 'Password is required').exists()
+    check('password', 'Password is required').exists(),
   ],
-  authController.authenticateUser
+  authenticateUser
 );
 
 module.exports = router;

@@ -1,11 +1,8 @@
 // routes/users.js
-
 const express = require('express');
 const { check } = require('express-validator');
-
 const router = express.Router();
-
-const usersController = require('../controllers/usersController');
+const { createUser } = require('../controllers/usersController');
 
 // @route     POST api/users
 // @desc      Register a user
@@ -13,14 +10,15 @@ const usersController = require('../controllers/usersController');
 router.post(
   '/',
   [
-    check('name', 'Please add name').not().isEmpty(),
+    check('firstName', 'Please add first name').not().isEmpty(),
+    check('lastName', 'Please add last name').not().isEmpty(),
     check('email', 'Please include a valid email').isEmail(),
     check(
       'password',
       'Please enter a password with 6 or more characters'
-    ).isLength({ min: 6 })
+    ).isLength({ min: 6 }),
   ],
-  usersController.createUser
+  createUser
 );
 
 module.exports = router;
