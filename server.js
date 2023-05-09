@@ -1,7 +1,7 @@
 const path = require('path');
 const connectDB = require('./config/db');
 const express = require('express');
-
+const cronJob = require('./utils/cronUtils');
 const app = express();
 const cors = require('cors');
 const corsOptions = require('./config/corsOptions');
@@ -41,5 +41,6 @@ app.use('/api/reset', require('./routes/reset'));
 //server
 mongoose.connection.once('open', () => {
   console.log('Connected to MongoDB');
+  cronJob.start(); // Start the cron job
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });

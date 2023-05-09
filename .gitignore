@@ -23,4 +23,5 @@ yarn-error.log*
 /config/default.json
 /log
 junk.js
+resetjunk.js
 junk.md
