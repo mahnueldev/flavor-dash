@@ -1,13 +1,13 @@
 // Import required modules
 const { validationResult } = require('express-validator');
-const { sendPasswordResetEmail } = require('../utils/passwordResetUtils');
+const { sendOTPEmail  } = require('../utils/sendOTPEmailUtils');
 const crypto = require('crypto');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
-const ResetCode = require('../models/ResetCode');
+const ResetOTP = require('../models/ResetOTP');
 
 // Define the forgot password controller
-const forgotPassword = async (req, res) => {
+const generateOTP = async (req, res) => {
   // Validate the request parameters
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -21,28 +21,34 @@ const forgotPassword = async (req, res) => {
   }
 
   // Find the existing reset code document for the user
-  let resetcode = await ResetCode.findOneAndUpdate({ userId });
+  let resetotp = await ResetOTP.findOneAndUpdate({ userId });
 
-  // If a reset code document already exists, update it with a new reset code and expiration date
-  if (resetcode) {
-    resetcode.resetCode = crypto.randomInt(100000, 999999);
-    resetcode.expirationDate = Date.now() + 3600000;
-    await resetcode.save();
+  // Generate a plain-text OTP
+  const plainOTP = crypto.randomInt(100000, 999999);
+
+  // Hash the OTP and save it to the database
+  const salt = await bcrypt.genSalt(10);
+  const hashedOTP = await bcrypt.hash(plainOTP.toString(), salt);
+
+  if (resetotp) {
+    // Update the existing reset code document with the new hashed OTP and expiration date
+    resetotp.otp = hashedOTP;
+    await resetotp.save();
   } else {
-    // Otherwise, create a new reset code document and link it to the user
-    resetcode = new ResetCode({
+    // Create a new reset code document and link it to the user
+    resetotp = new ResetOTP({
       userId: user.id,
-      resetCode: crypto.randomInt(100000, 999999),
-      expirationDate: Date.now() + 3600000,
+      otp: hashedOTP,
     });
-    await resetcode.save();
+    await resetotp.save();
   }
 
-  // Send the password reset email
-  await sendPasswordResetEmail(firstName, email, resetcode.resetCode);
+  // Send the plain-text OTP to the user's email address
+  await sendOTPEmail(firstName, email, plainOTP);
 
-  return res.status(200).json({ msg: 'Password reset email sent' });
+  return res.status(200).json({ msg: 'Password reset OTP email sent' });
 };
+
 
 const resetPassword = async (req, res) => {
   // Validate the request parameters
@@ -51,7 +57,7 @@ const resetPassword = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { email, resetCode, password } = req.body;
+  const { email, otp, password } = req.body;
 
   // Find the user with the given email address
   const user = await User.findOne({ email });
@@ -60,27 +66,27 @@ const resetPassword = async (req, res) => {
   }
 
   // Find the reset code document for the user
-  const resetcode = await ResetCode.findOne({ userId: user.id });
-  if (!resetcode) {
-    return res.status(400).json({ msg: 'Reset code not found' });
+  const resetotp = await ResetOTP.findOne({ userId: user.id });
+  if (!resetotp) {
+    return res.status(400).json({ msg: 'Reset otp not found' });
   }
+  
+ // Compare the entered OTP with the hashed OTP in the database
+const isMatch = await bcrypt.compare(otp.toString(), resetotp.otp);
+if (!isMatch) {
+  return res.status(400).json({ msg: 'Invalid credentials' });
+}
 
-  // Check if the reset code is valid and has not expired
-  if (resetcode.resetCode !== resetCode || resetcode.expirationDate < Date.now()) {
-    return res.status(400).json({ msg: 'Invalid or expired reset code' });
-  }
-
-
-  // Update the user's password and delete the reset code document
-  user.password = password;
   // Hash the new password
   const salt = await bcrypt.genSalt(10);
-  user.password = await bcrypt.hash(password, salt);
+  const newPassword = await bcrypt.hash(password, salt);
   
+  // Update the user's password and delete the reset code document
+  user.password = newPassword;
   await user.save();
-  await resetcode.deleteOne();
+  await resetotp.deleteOne();
 
   return res.status(200).json({ msg: 'Password reset successful' });
 };
 
-module.exports = { forgotPassword, resetPassword };
+module.exports = { generateOTP, resetPassword };

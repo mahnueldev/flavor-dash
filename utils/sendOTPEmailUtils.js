@@ -9,7 +9,7 @@ if (process.env.NODE_ENV === 'development') {
   dotenv.config({ path: '.env.production.local' });
 }
 
-const sendPasswordResetEmail = async (firstName, email, resetCode) => {
+const sendOTPEmail = async (firstName, email, plainOTP) => {
   const transporter = nodemailer.createTransport({
     host: process.env.MAILER_SERVICE,
     port: 465,
@@ -37,10 +37,10 @@ const sendPasswordResetEmail = async (firstName, email, resetCode) => {
   const mailOptions = {
     from: 'Flavor Dash <hello@mahnuel.com>',
     to: email,
-    subject: 'Reset Password',
-    template: 'passwordReset',
+    subject: 'RESET PASSWORD!',
+    template: 'otpReset',
     context: {
-      resetCode: resetCode,
+      plainOTP: plainOTP,
       firstName: firstName,
     },
     attachments: [
@@ -61,4 +61,4 @@ const sendPasswordResetEmail = async (firstName, email, resetCode) => {
   }
 };
 
-module.exports = { sendPasswordResetEmail };
+module.exports = { sendOTPEmail };

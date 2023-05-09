@@ -31,13 +31,11 @@ const UserSchema = mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  resetCode: {
-    type: Number,
-    ref: 'ResetCode'
+  otp: {
+    type: String,
+    ref: 'ResetOTP'
   },
-  resetCodeExpiration: {
-    type: Date
-  }
+
 });
 
 module.exports = mongoose.model('user', UserSchema);
