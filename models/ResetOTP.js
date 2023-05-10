@@ -1,19 +1,20 @@
 const mongoose = require('mongoose');
 
-const ResetOTPSchema = mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+const ResetOTPSchema = mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    otp: {
+      type: String,
+    },
   },
-  otp: {
-    type: String,
-  },
-  expiresAt: {
-    type: Date,
-    default: Date.now,
-    index: { expires: '10m' },
-  },
- 
-});
+  {
+    timestamps: true, // Enable timestamps
+  }
+);
+
+ResetOTPSchema.index({ updatedAt: 1 }, { expireAfterSeconds: 600 }); // Index to expire documents after 10 minutes
 
 module.exports = mongoose.model('ResetOTP', ResetOTPSchema);

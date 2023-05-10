@@ -41,7 +41,8 @@ const sendOTPEmail = async (firstName, email, plainOTP) => {
     template: 'otpReset',
     context: {
       plainOTP: plainOTP,
-      firstName: firstName,
+      firstName: firstName
+
     },
     attachments: [
       {

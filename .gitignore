@@ -24,4 +24,5 @@ yarn-error.log*
 /log
 junk.js
 resetjunk.js
+passwordResetJunk.js
 junk.md

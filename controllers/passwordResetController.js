@@ -14,14 +14,15 @@ const generateOTP = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { userId, firstName, email } = req.body;
+  const {  email } = req.body;
   let user = await User.findOne({ email });
   if (!user) {
     return res.status(400).json({ msg: 'User not found' });
   }
 
   // Find the existing reset code document for the user
-  let resetotp = await ResetOTP.findOneAndUpdate({ userId });
+  let resetotp = await ResetOTP.findOne({ userId: user.id  });
+  
 
   // Generate a plain-text OTP
   const plainOTP = crypto.randomInt(100000, 999999);
@@ -42,7 +43,7 @@ const generateOTP = async (req, res) => {
     });
     await resetotp.save();
   }
-
+let firstName = user.firstName;
   // Send the plain-text OTP to the user's email address
   await sendOTPEmail(firstName, email, plainOTP);
 
