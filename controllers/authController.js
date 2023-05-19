@@ -5,17 +5,6 @@ const { validationResult } = require('express-validator');
 
 const User = require('../models/User');
 
-// Get logged in user
-const getLoggedInUser = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id).select('-password');
-    res.json(user);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-};
-
 // Authenticate user & get token
 const authenticateUser = async (req, res) => {
   const errors = validationResult(req);
@@ -38,27 +27,38 @@ const authenticateUser = async (req, res) => {
       return res.status(400).json({ msg: 'Invalid Credentials' });
     }
 
-    const payload = {
-      user: {
-        id: user.id
-      }
-    };
+    if (user.roles !== 'User') {
+      return res.status(403).json({ msg: 'Unauthorized' });
+    }
+    const roles = user.roles;
+    const accessToken = jwt.sign(
+      { user: { id: user.id, roles: user.roles } },
 
-    jwt.sign(
-      payload,
-      config.get('jwtSecret'),
-      {
-        expiresIn: 360000
-      },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token });
-      }
+      config.get('accessTokenSecret'),
+      { expiresIn: '5m' }
     );
+
+    const refreshToken = jwt.sign(
+      { user: { id: user.id } },
+      config.get('refreshTokenSecret'),
+      { expiresIn: '10m' }
+    );
+
+    // Store refreshToken in database
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    res.cookie('jwtCookie', refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None',
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+    res.json({ roles, accessToken });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
   }
 };
 
-module.exports = { getLoggedInUser, authenticateUser };
+module.exports = { authenticateUser };

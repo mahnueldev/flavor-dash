@@ -1,6 +1,6 @@
 // Import required modules
 const { validationResult } = require('express-validator');
-const { sendOTPEmail  } = require('../utils/sendOTPEmailUtils');
+const { sendOTPEmail  } = require('../utils/authMailer');
 const crypto = require('crypto');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
@@ -51,7 +51,7 @@ let firstName = user.firstName;
 };
 
 
-const resetPassword = async (req, res) => {
+const otpResetPassword = async (req, res) => {
   // Validate the request parameters
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -90,4 +90,4 @@ if (!isMatch) {
   return res.status(200).json({ msg: 'Password reset successful' });
 };
 
-module.exports = { generateOTP, resetPassword };
+module.exports = { generateOTP, otpResetPassword };

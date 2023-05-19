@@ -22,7 +22,4 @@ yarn-debug.log*
 yarn-error.log*
 /config/default.json
 /log
-junk.js
-resetjunk.js
-passwordResetJunk.js
-junk.md
+/zjunk

@@ -1,73 +1,34 @@
-const bcrypt = require('bcryptjs');
-const { v4: uuidv4 } = require('uuid');
-const jwt = require('jsonwebtoken');
-const config = require('config');
-const { validationResult } = require('express-validator');
-const { sendApiKeyEmail } = require('../utils/sendApiKeyUtils');
-const crypto = require('crypto');
-
 const User = require('../models/User');
 
-const createUser = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
-  const { firstName, lastName, email, password } = req.body;
-
+// Get logged in user
+const getUser = async (req, res) => {
   try {
-    let user = await User.findOne({ email });
-
-    if (user) {
-      return res.status(400).json({ msg: 'User already exists' });
-    }
-
-    const uuid = uuidv4().substring(0, 15);
-    const hash = crypto.createHash('sha512').update(uuid).digest('base64').substring(0, 15);
-    const randIndex = Math.floor(Math.random() * hash.length);
-    const apiKey =
-      hash.substring(0, randIndex) +
-      hash.charAt(randIndex).toUpperCase() +
-      hash.substring(randIndex + 1) +
-      '_' +
-      uuid.substring(uuid.length - 5).toUpperCase();
-
-    user = new User({
-      firstName,
-      lastName,
-      email,
-      password,
-      roles: 'editor',
-      apikey: await bcrypt.hash(apiKey, 10)
-    });
-    const salt = await bcrypt.genSalt(10);
-
-    user.password = await bcrypt.hash(password, salt);
-    await user.save();
-    await sendApiKeyEmail(firstName, email, apiKey);
-
-    const payload = {
-      user: {
-        id: user.id,
-      },
-    };
-
-    jwt.sign(
-      payload,
-      config.get('jwtSecret'),
-      {
-        expiresIn: 360000,
-      },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token });
-      }
-    );
+    const user = await User.findById(req.user.id).select('-password');
+    res.json(user);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
   }
 };
 
-module.exports = { createUser };
+// Delete user
+const deleteUser = async (req, res) => {
+  try {
+    await User.findByIdAndRemove(req.user.id);
+    res.json({ msg: 'User deleted' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+};
+
+// Get all users
+const getAllUsers = async (req, res) => {
+  const users = await User.find();
+  if (!users) {
+    return res.status(204).json({ errors: [{ msg: 'No users found' }] });
+  }
+  res.json(users);
+}
+
+module.exports = { getUser, deleteUser, getAllUsers };

@@ -1,14 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { check } = require('express-validator');
-const {
-  getLoggedInUser,
-  authenticateUser,
-} = require('../controllers/authController');
-const authMiddleware = require('../middleware/authMiddleware');
-
-// Get logged in user
-router.get('/', authMiddleware, getLoggedInUser);
+const { authenticateUser } = require('../controllers/authController');
 
 // Authenticate user & get token
 router.post(

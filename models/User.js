@@ -24,9 +24,10 @@ const UserSchema = mongoose.Schema({
   },
   roles: {
     type: String,
-    enum: ['admin', 'editor'],
-    default: 'editor'
+    enum: ['Admin', 'User'],
+    default: 'User'
   },
+  refreshToken: String,
   date: {
     type: Date,
     default: Date.now
