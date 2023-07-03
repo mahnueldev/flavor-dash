@@ -18,7 +18,7 @@ const handleRefreshToken = async (req, res) => {
       { user: { id: user.id, roles: user.roles } },
    
       config.get('accessTokenSecret'),
-      { expiresIn: '30s' }
+      { expiresIn: '5s' }
     );
     res.json({ roles, accessToken });
   });

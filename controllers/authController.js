@@ -2,7 +2,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const { validationResult } = require('express-validator');
-
 const User = require('../models/User');
 
 // Authenticate user & get token
@@ -35,13 +34,13 @@ const authenticateUser = async (req, res) => {
       { user: { id: user.id, roles: user.roles } },
 
       config.get('accessTokenSecret'),
-      { expiresIn: '5m' }
+      { expiresIn: '10m' }
     );
 
     const refreshToken = jwt.sign(
       { user: { id: user.id } },
       config.get('refreshTokenSecret'),
-      { expiresIn: '10m' }
+      { expiresIn: '1d' }
     );
 
     // Store refreshToken in database
@@ -50,7 +49,7 @@ const authenticateUser = async (req, res) => {
 
     res.cookie('jwtCookie', refreshToken, {
       httpOnly: true,
-      secure: true,
+      // secure: true,
       sameSite: 'None',
       maxAge: 24 * 60 * 60 * 1000,
     });

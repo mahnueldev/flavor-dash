@@ -1,5 +1,4 @@
 // Import required modules
-const { validationResult } = require('express-validator');
 const { sendURLEmail } = require('../utils/authMailer');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
@@ -11,55 +10,64 @@ const generateURL = async (req, res) => {
     // Get user email from request body
     const { email } = req.body;
 
-    // Check if user with the given email exists
+    // Check if a user with the given email exists
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ errors: [{ msg: 'User not found' }] });
+      return res.status(404).json({ msg: 'User not found' });
     }
 
-    // Generate JWT token with user id and secret key
-    const token = jwt.sign({ userId: user.id }, config.get('accessTokenSecret'), {
+    // Generate JWT token with user ID and secret key
+    const token = jwt.sign({ _id: user._id }, config.get('accessTokenSecret'), {
       expiresIn: '30m',
     });
 
-    // Generate reset password URL with token
-    const resetURL = `${config.get(
-      'frontendURL'
-    )}/reset-password/${token}`;
+    // Generate the reset password URL with the token
+    const resetURL = `${config.get('frontendURL')}/reset-password/${token}`;
 
-    // Send reset password email to user
+    // Send the reset password email to the user
     await sendURLEmail(user.firstName, user.email, resetURL);
 
     res.status(200).json({ msg: 'Reset password link sent to your email' });
   } catch (err) {
     console.error(err.message);
-    res.status(500).json({ errors: [{ msg: 'Server error' }] });
+    res.status(500).json({ msg: 'Server error' });
   }
 };
 
 const urlResetPassword = async (req, res) => {
   try {
-    // Get user id and new password from request body
-    const { userId, password } = req.body;
+    const { password } = req.body;
+    const token = req.params.token;
+    console.log({ token });
+    console.log('Req Body:', password);
 
+    // Verify the token
+    const decodedToken = await jwt.verify(
+      token,
+      config.get('accessTokenSecret')
+    );
+    if (!decodedToken) {
+      return res.status(401).json({ msg: 'Invalid token' });
+    }
+    const userId = decodedToken._id;
+
+    // Find the user with the given ID
+    let user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
     // Hash the new password
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    // Update user password in the database
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { password: hashedPassword },
-      { new: true }
-    );
-    if (!user) {
-      return res.status(404).json({ errors: [{ msg: 'User not found' }] });
-    }
+    const newPassword = await bcrypt.hash(password, salt);
+    console.log(typeof newPassword);
+    // Update the user's password
+    user.password = newPassword;
+    await user.save();
 
     res.status(200).json({ msg: 'Password reset successful' });
   } catch (err) {
     console.error(err.message);
-    res.status(500).json({ errors: [{ msg: 'Server error' }] });
+    res.status(500).json({ msg: 'Server error' });
   }
 };
 
