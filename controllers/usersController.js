@@ -26,7 +26,7 @@ const deleteUser = async (req, res) => {
 const getAllUsers = async (req, res) => {
   const users = await User.find();
   if (!users) {
-    return res.status(204).json({ errors: [{ msg: 'No users found' }] });
+    return res.status(204).json({ msg: 'No Users found' });
   }
   res.json(users);
 }

@@ -18,9 +18,13 @@ const UserSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  apikey: {
+  apiKey: {
     type: String,
     required: true
+  },
+  apiHost: {
+    type: String,
+    default: 'flavour-dash'
   },
   roles: {
     type: String,
@@ -32,10 +36,7 @@ const UserSchema = mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  otp: {
-    type: String,
-    ref: 'ResetOTP'
-  },
+ 
 
 });
 

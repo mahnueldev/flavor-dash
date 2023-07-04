@@ -1,13 +1,6 @@
 const multer = require('multer');
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/'); // make sure the directory 'uploads' exists
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now() + '-' + file.originalname);
-  },
-});
+const storage = multer.diskStorage({});
 
 const fileFilter = function (req, file, cb) {
   const allowedFileTypes = [
@@ -41,7 +34,7 @@ const singleUpload = (fieldName) => {
           return res.status(400).json({ msg: 'No file uploaded' });
         }
 
-        req.body.filename = req.file.filename;
+        req.body.image = req.file.path;
         next();
       });
     } catch (err) {

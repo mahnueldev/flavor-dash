@@ -8,13 +8,12 @@ const corsOptions = require('./config/corsOptions');
 require('dotenv').config();
 const PORT = process.env.PORT || 8080;
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 const logger = require('./middleware/logger');
-const {accessLogMiddleware, errorLogMiddleware } = require('./middleware/morganWare');
-const verifyJWT= require('./middleware/verifyJWT');
+const { accessLogMiddleware, errorLogMiddleware } = require('./middleware/morganWare');
+const verifyJWT = require('./middleware/verifyJWT');
+// const authApiKey = require('./middleware/authApiKey');
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(express.json()); // Use express.json() for parsing JSON data
 
 
 connectDB();
@@ -41,8 +40,13 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/reset', require('./routes/reset'));
 app.use('/api/refresh', require('./routes/refresh'));
 app.use('/api/logout', require('./routes/logout'));
+// Recipe route functions
+app.use('/api/recipe', require('./routes/recipe'));
+app.use('/api/users', require('./routes/users'));
+
 app.use(verifyJWT);
-app.use('/api/user', require('./routes/users'));
+app.use('/api/user', require('./routes/user'));
+
 
 
 //server
