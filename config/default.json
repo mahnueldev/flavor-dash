@@ -1,7 +1,0 @@
-{
-  "mongoURI": "mongodb+srv://emmanuelgbd3:abiosi@cluster0.xhnw2zo.mongodb.net/?retryWrites=true&w=majority",
-  "accessTokenSecret": "985154ca8cea9571dcfc29df8218cb165e986e073bce5852760e91b1b749b500b2cc489dc217e2e48ed09e038224255a03b1a11f2f892df7414f3a473c4e930f",
-  "refreshTokenSecret": "2c0e6d68e70451a7b14415f8c05d36672d0ce5611e86126ad06526b6f8225c527e0bf1d9090ac1cca209270ffb592036436c38c2e712a02407621ed7ca6f1a16",
-  "frontendURL": "http://localhost:4000"
-
-}
