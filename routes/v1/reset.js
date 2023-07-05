@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { check } = require('express-validator');
-const { generateURL, urlResetPassword } = require('../../controllers/v1/urlpasswordResetController');
+const { generateURL, urlResetPassword } = require('../../controllers/v1/urlPasswordResetController');
 
 
 
