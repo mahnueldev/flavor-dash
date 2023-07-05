@@ -3,7 +3,13 @@ const { sendURLEmail } = require('../../utils/authMailer');
 const User = require('../../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const config = require('config');
+const dotenv = require('dotenv');
+
+if (process.env.NODE_ENV === 'development') {
+  dotenv.config({ path: '.env.development.local' });
+} else {
+  dotenv.config({ path: '.env.production.local' });
+}
 
 const generateURL = async (req, res) => {
   try {
@@ -17,12 +23,12 @@ const generateURL = async (req, res) => {
     }
 
     // Generate JWT token with user ID and secret key
-    const token = jwt.sign({ _id: user._id }, config.get('accessTokenSecret'), {
+    const token = jwt.sign({ _id: user._id }, process.env.ACCESS_TOKEN_SECRET, {
       expiresIn: '30m',
     });
 
     // Generate the reset password URL with the token
-    const resetURL = `${config.get('frontendURL')}/reset-password/${token}`;
+    const resetURL = `${process.env.FRONTEND_URL}/reset-password/${token}`;
 
     // Send the reset password email to the user
     await sendURLEmail(user.firstName, user.email, resetURL);
@@ -44,7 +50,7 @@ const urlResetPassword = async (req, res) => {
     // Verify the token
     const decodedToken = await jwt.verify(
       token,
-      config.get('accessTokenSecret')
+      process.env.ACCESS_TOKEN_SECRET
     );
     if (!decodedToken) {
       return res.status(401).json({ msg: 'Invalid token' });

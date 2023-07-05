@@ -1,7 +1,15 @@
 const mongoose = require('mongoose');
-const config = require('config');
-const db = config.get('mongoURI');
+const dotenv = require('dotenv');
 
+
+
+if (process.env.NODE_ENV === 'development') {
+  dotenv.config({ path: '.env.development.local' });
+} else {
+  dotenv.config({ path: '.env.production.local' });
+}
+
+const db = process.env.mongoURI;
 const connectDB = async () => {
   try {
     await mongoose.connect(db, {
@@ -14,3 +22,4 @@ const connectDB = async () => {
 };
 
 module.exports = connectDB;
+

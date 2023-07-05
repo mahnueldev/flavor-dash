@@ -1,8 +1,16 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const config = require('config');
 const { validationResult } = require('express-validator');
 const User = require('../../models/User');
+const dotenv = require('dotenv');
+
+
+
+if (process.env.NODE_ENV === 'development') {
+  dotenv.config({ path: '.env.development.local' });
+} else {
+  dotenv.config({ path: '.env.production.local' });
+}
 
 // Authenticate user & get token
 const authenticateUser = async (req, res) => {
@@ -32,14 +40,13 @@ const authenticateUser = async (req, res) => {
     const roles = user.roles;
     const accessToken = jwt.sign(
       { user: { id: user.id, roles: user.roles } },
-
-      config.get('accessTokenSecret'),
+      process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: '10m' }
     );
-
+    
     const refreshToken = jwt.sign(
       { user: { id: user.id } },
-      config.get('refreshTokenSecret'),
+      process.env.REFRESH_TOKEN_SECRET,
       { expiresIn: '1d' }
     );
 
