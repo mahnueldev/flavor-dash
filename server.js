@@ -41,7 +41,7 @@ app.use('/api/reset', require('./routes/v1/reset'));
 app.use('/api/refresh', require('./routes/v1/refresh'));
 app.use('/api/logout', require('./routes/v1/logout'));
 // Recipe route functions
-app.use('/api/recipe', require('./routes/v1/recipe'));
+app.use('/api/recipes', require('./routes/v1/recipe'));
 app.use('/api/users', require('./routes/v1/users'));
 
 app.use(verifyJWT);

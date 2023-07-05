@@ -5,7 +5,7 @@ const isAdmin = require('../../middleware/isAdmin');
 
 // Get users
 
-router.get('/', isAdmin, getAllUsers);
+router.get('/',  getAllUsers);
 
 
 module.exports = router;

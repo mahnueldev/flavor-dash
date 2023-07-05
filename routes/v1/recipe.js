@@ -9,7 +9,7 @@ const isAdmin = require('../../middleware/isAdmin');
 
 // Create recipe
 router.post('/', verifyJWT, singleUpload('image'),  createRecipe);
-// Get recipe
+// Get recipes
 router.get('/', authApiKey, limiter, getRecipe);
 // Update recipe
 router.put('/',  updateRecipe);
