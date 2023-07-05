@@ -1,5 +1,5 @@
-const Recipe = require('../models/Recipe');
-const {uploadToCloudinary, deleteFromCloudinaryById, deleteAllFromCloudinary} = require('../utils/cloudinaryUtils');
+const Recipe = require('../../models/Recipe');
+const {uploadToCloudinary, deleteFromCloudinaryById, deleteAllFromCloudinary} = require('../../utils/cloudinaryUtils');
 
 const createRecipe = async (req, res) => {
     try {

@@ -15,15 +15,17 @@ const RecipeSchema = mongoose.Schema({
   },
   difficulty: {
     type: String,
-    
+    enum: ['easy', 'medium', 'hard'],
+    default: null
   },
   cuisine: {
     type: String,
+    enum: ['Italian', 'Mexican', 'Chinese'],
+    default: null
     
   },
   nutri_info: {
-    type: String,
-    
+    type: [String],
   },
   image: {
     publicId: {type:String, required:true},
@@ -31,8 +33,26 @@ const RecipeSchema = mongoose.Schema({
   },
   tags: {
     type: String,
-    
-  },
+    enum: [
+      'Vegetarian',
+      'Vegan',
+      'Gluten-Free',
+      'Dairy-Free',
+      'Nut-Free',
+      'Low Carb',
+      'High Protein',
+      'Keto',
+      'Paleo',
+      'Comfort Food',
+      'Quick and Easy',
+      'Breakfast',
+      'Lunch',
+      'Dinner',
+      'Appetizer',
+      'Dessert'
+    ],
+    default: null
+  }
 }, {
   timestamps: true // Automatically adds createdAt and updatedAt fields
 });

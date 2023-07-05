@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { createRecipe, getRecipe, updateRecipe, deleteRecipe, deleteRecipeById } = require('../controllers/recipeController');
-const { singleUpload } = require('../utils/multerConn');
-const verifyJWT = require('../middleware/verifyJWT');
-const limiter = require('../middleware/limiter');
-const authApiKey = require('../middleware/authApiKey');
-const isAdmin = require('../middleware/isAdmin');
+const { createRecipe, getRecipe, updateRecipe, deleteRecipe, deleteRecipeById } = require('../../controllers/v1/recipeController');
+const { singleUpload } = require('../../utils/multerConn');
+const verifyJWT = require('../../middleware/verifyJWT');
+const limiter = require('../../middleware/limiter');
+const authApiKey = require('../../middleware/authApiKey');
+const isAdmin = require('../../middleware/isAdmin');
 
 // Create recipe
 router.post('/', verifyJWT, singleUpload('image'),  createRecipe);

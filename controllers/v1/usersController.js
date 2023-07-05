@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const User = require('../../models/User');
 
 // Get logged in user
 const getUser = async (req, res) => {

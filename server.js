@@ -35,17 +35,17 @@ app.use(cookieParser());
  
 
 // Routes
-app.use('/api/register', require('./routes/register'));
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/reset', require('./routes/reset'));
-app.use('/api/refresh', require('./routes/refresh'));
-app.use('/api/logout', require('./routes/logout'));
+app.use('/api/register', require('./routes/v1/register'));
+app.use('/api/auth', require('./routes/v1/auth'));
+app.use('/api/reset', require('./routes/v1/reset'));
+app.use('/api/refresh', require('./routes/v1/refresh'));
+app.use('/api/logout', require('./routes/v1/logout'));
 // Recipe route functions
-app.use('/api/recipe', require('./routes/recipe'));
-app.use('/api/users', require('./routes/users'));
+app.use('/api/recipe', require('./routes/v1/recipe'));
+app.use('/api/users', require('./routes/v1/users'));
 
 app.use(verifyJWT);
-app.use('/api/user', require('./routes/user'));
+app.use('/api/user', require('./routes/v1/user'));
 
 
 
