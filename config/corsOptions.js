@@ -10,7 +10,7 @@ const corsOptions = {
     'http://localhost:8080/api/recipes',
   ],
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token', 'x-api-key',],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token'],
   methods: 'GET,POST,PUT,DELETE',
   credentials: true,
 };

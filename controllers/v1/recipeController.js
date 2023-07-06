@@ -29,10 +29,10 @@ const createRecipe = async (req, res) => {
       // Save the recipe to the database
       await newRecipe.save();
   
-      res.status(201).json({ message: 'Recipe created successfully', recipe: newRecipe });
+      res.status(201).json({ msg: 'Recipe created successfully', recipe: newRecipe });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: 'Server Error' });
+      res.status(500).json({ msg: 'Server Error' });
     }
   };
 

@@ -1,5 +1,12 @@
 const jwt = require('jsonwebtoken');
-const config = require('config');
+const dotenv = require('dotenv');
+
+if (process.env.NODE_ENV === 'development') {
+  dotenv.config({ path: '.env.development.local' });
+} else {
+  dotenv.config({ path: '.env.production.local' });
+}
+
 
 const verifyJWT = (req, res, next) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
@@ -8,7 +15,7 @@ const verifyJWT = (req, res, next) => {
 
   jwt.verify(
     accessToken,
-    config.get('accessTokenSecret'),
+    process.env.ACCESS_TOKEN_SECRET,
     (err, decoded) => {
       if (err) return res.sendStatus(403); // invalid token
       req.user = decoded.user; // Store just the user ID

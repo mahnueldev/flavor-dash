@@ -21,24 +21,30 @@ const createUser = async (req, res) => {
     }
 
     const uuid = uuidv4().substring(0, 15);
-    const hash = crypto.createHash('sha512').update(uuid).digest('base64').substring(0, 15);
+    const hash = crypto
+      .createHash('sha512')
+      .update(uuid)
+      .digest('base64')
+      .substring(0, 15);
     const randIndex = Math.floor(Math.random() * hash.length);
-    const apiKey =
+    const key =
       hash.substring(0, randIndex) +
       hash.charAt(randIndex).toUpperCase() +
       hash.substring(randIndex + 1) +
       '_' +
       uuid.substring(uuid.length - 5).toUpperCase();
+    // Remove special characters from apiKey
+    apiKey = key.replace(/[^a-zA-Z0-9]/g, '');
 
+    const salt = await bcrypt.genSalt(10);
     user = new User({
       firstName,
       lastName,
       email,
       password,
       roles: 'User',
-      apiKey: await bcrypt.hash(apiKey, 10)
+      apiKey: await bcrypt.hash(apiKey, salt),
     });
-    const salt = await bcrypt.genSalt(10);
 
     user.password = await bcrypt.hash(password, salt);
     await user.save();
