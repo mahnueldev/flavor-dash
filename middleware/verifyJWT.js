@@ -10,7 +10,7 @@ if (process.env.NODE_ENV === 'development') {
 
 const verifyJWT = (req, res, next) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
-  if (!authHeader?.startsWith('Bearer ')) return res.sendStatus(401);
+  if (!authHeader?.startsWith('Bearer ')) return res.status(401).json({ msg: 'Access Denied' });
   const accessToken= authHeader.split(' ')[1];
 
   jwt.verify(
