@@ -1,5 +1,7 @@
 const corsOptions = {
   origin: [
+    'https://cyclic.app',
+    'https://app.cyclic.sh/#',
     'https://flavourdash.netlify.app',
     'https://app-flavourdash.netlify.app',
     'https://determined-blue-cloak.cyclic.app',
