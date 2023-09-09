@@ -1,10 +1,10 @@
 const path = require('path');
 const connectDB = require('./config/db');
 const express = require('express');
-const cookieParser = require('cookie-parser');
-const app = express();
 const cors = require('cors');
 const corsOptions = require('./config/corsOptions');
+const cookieParser = require('cookie-parser');
+const app = express();
 require('dotenv').config();
 const PORT = process.env.PORT || 8080;
 const mongoose = require('mongoose');
@@ -17,8 +17,6 @@ app.use(express.json()); // Use express.json() for parsing JSON data
 
 
 connectDB();
-// Cross Origin Resource Sharing
-app.use(cors(corsOptions));
 
 
 // Use HTTP request logger
@@ -32,8 +30,10 @@ app.use(express.urlencoded({ extended: true }));
 
 // Use the cookie-parser middleware
 app.use(cookieParser());
- 
 
+
+// Cross Origin Resource Sharing
+app.use(cors(corsOptions));
 // Routes
 app.use('/api/register', require('./routes/v1/register'));
 app.use('/api/auth', require('./routes/v1/auth'));

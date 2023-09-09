@@ -12,6 +12,7 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token', 'x-api-key', 'x-api-host'],
   methods: 'GET,POST,PUT,DELETE',
   credentials: true,
+  preflightContinue: false,
 };
 
 module.exports = corsOptions;
